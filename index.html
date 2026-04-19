@@ -1173,6 +1173,11 @@
   <script>
     const STORE_KEY = "vai-v1";
 
+    const store = (() => {
+      try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); return localStorage; }
+      catch { const m = {}; return { getItem: k => m[k] ?? null, setItem: (k, v) => { m[k] = v; }, removeItem: k => { delete m[k]; } }; }
+    })();
+
     const MODELS = [
       { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", org: "Meta", logoClass: "logo-meta", logoChar: "M", desc: "Large, versatile — great for most tasks" },
       { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", org: "Meta", logoClass: "logo-meta", logoChar: "M", desc: "Very fast, practical for short prompts" },
@@ -1222,7 +1227,7 @@
 
     function load() {
       try {
-        const raw = localStorage.getItem(STORE_KEY);
+        const raw = store.getItem(STORE_KEY);
         const parsed = raw ? JSON.parse(raw) : {};
         return {
           apiKey: parsed.apiKey || "",
@@ -1233,7 +1238,7 @@
       } catch { return { apiKey: "", model: "llama-3.3-70b-versatile", activeId: null, convos: [] }; }
     }
 
-    function save() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+    function save() { store.setItem(STORE_KEY, JSON.stringify(state)); }
 
     function showKeyOverlay() { $("keyOverlay").classList.remove("hidden"); }
 
@@ -1532,7 +1537,7 @@
 
       $("clearAll").addEventListener("click", () => {
         if (!confirm("Delete ALL local data including your API key? This cannot be undone.")) return;
-        localStorage.removeItem(STORE_KEY);
+        store.removeItem(STORE_KEY);
         location.reload();
       });
 
