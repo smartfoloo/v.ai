@@ -1003,10 +1003,12 @@
 </head>
 
 <body>
+
+  <!-- ── API Key Popup ── -->
   <div class="overlay" id="keyOverlay">
     <div class="modal">
       <div class="modal-logo">
-        <div class="modal-logo-mark">🤖</div>
+        <div class="modal-logo-mark">v</div>
         <div style="font-size:16px;font-weight:700;letter-spacing:-0.3px;">v.ai</div>
       </div>
       <h2>Enter your Groq API key</h2>
@@ -1031,6 +1033,8 @@
       </div>
     </div>
   </div>
+
+  <!-- ── Settings Modal ── -->
   <div class="overlay hidden" id="settingsOverlay">
     <div class="modal">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
@@ -1087,10 +1091,12 @@
       </div>
     </div>
   </div>
+
+  <!-- ── Sidebar ── -->
   <aside class="sidebar">
     <div class="sidebar-top">
       <div class="brand">
-        <div class="brand-mark">🤖</div>
+        <div class="brand-mark">v</div>
         <div class="brand-name">v.ai</div>
       </div>
       <button class="icon-btn" id="newChatBtn" title="New chat">
@@ -1113,6 +1119,8 @@
       </button>
     </div>
   </aside>
+
+  <!-- ── Main ── -->
   <main class="main">
     <div class="topbar">
       <div class="model-selector" id="modelSelector">
@@ -1135,7 +1143,7 @@
 
     <div class="chat-container" id="chatContainer">
       <div class="chat-empty" id="chatEmpty">
-        <div class="chat-empty-logo">🤖</div>
+        <div class="chat-empty-logo">v</div>
         <h3>How can I help you?</h3>
         <p>Choose a model above and start chatting.</p>
       </div>
@@ -1190,6 +1198,14 @@
 
     const $ = id => document.getElementById(id);
 
+    function uuid() {
+      if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
+
     let state = load();
 
     init();
@@ -1230,7 +1246,7 @@
     }
 
     function newConvo() {
-      const c = { id: crypto.randomUUID(), title: "New chat", ts: Date.now(), msgs: [] };
+      const c = { id: uuid(), title: "New chat", ts: Date.now(), msgs: [] };
       state.convos.unshift(c);
       state.activeId = c.id;
       save();
@@ -1352,7 +1368,7 @@
     </div>`;
       }
       return `<div class="msg assistant">
-    <div class="msg-avatar">🤖</div>
+    <div class="msg-avatar">v</div>
     <div class="msg-body"><div class="msg-content">${renderMd(m.content)}</div></div>
   </div>`;
     }
@@ -1409,7 +1425,7 @@
 
       const loadDiv = document.createElement("div");
       loadDiv.className = "msg assistant";
-      loadDiv.innerHTML = `<div class="msg-avatar">🤖</div><div class="msg-body"><div class="msg-content"><div class="spinner"></div></div></div>`;
+      loadDiv.innerHTML = `<div class="msg-avatar">v</div><div class="msg-body"><div class="msg-content"><div class="spinner"></div></div></div>`;
       inner.appendChild(loadDiv);
       $("chatContainer").scrollTop = $("chatContainer").scrollHeight;
 
