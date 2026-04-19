@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>v.ai</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;
+      --bg-1: #0a0a0a;
+      --bg-2: #111111;
+      --bg-3: #1a1a1a;
+      --bg-hover: #222222;
+      --text: #fafafa;
+      --text-2: #a1a1aa;
+      --text-3: #52525b;
+      --border: #1f1f1f;
+      --border-2: #2a2a2a;
+      --accent: #ffffff;
+      --accent-dim: rgba(255, 255, 255, 0.08);
+      --radius: 12px;
+      --font: "DM Sans", system-ui, sans-serif;
+      --mono: "Geist Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      overflow: hidden;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.98)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+      }
+    }
+
+    .modal {
+      background: var(--bg-1);
+      border: 1px solid var(--border-2);
+      border-radius: 20px;
+      padding: 32px;
+      width: 420px;
+      max-width: calc(100vw - 32px);
+      animation: slideUp 0.25s ease;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 32px 80px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .modal-logo-mark {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      background: var(--bg-2);
+      letter-spacing: -0.5px;
+    }
+
+    .modal h2 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .modal p {
+      color: var(--text-2);
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+
+    .modal-sep {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-2);
+      margin-bottom: 6px;
+      letter-spacing: 0.2px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      background: var(--bg-2);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .field input:focus {
+      border-color: #444;
+    }
+
+    .modal-notice {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--text-2);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .modal-notice svg {
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 9px;
+      padding: 9px 16px;
+      transition: background 0.15s, opacity 0.15s, transform 0.1s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border: 1px solid var(--border-2);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-3);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.88;
+    }
+
+    .btn-danger {
+      background: #1c0808;
+      color: #f87171;
+      border: 1px solid #2a1010;
+    }
+
+    .btn-danger:hover {
+      background: #2a0f0f;
+    }
+
+    .sidebar {
+      width: 260px;
+      min-width: 260px;
+      background: var(--bg-1);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar-top {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .brand-mark {
+      width: 26px;
+      height: 26px;
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--bg-2);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-name {
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.2px;
+    }
+
+    .icon-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-3);
+      color: var(--text);
+      border-color: #333;
+    }
+
+    .icon-btn.danger:hover {
+      background: #1c0808;
+      color: #f87171;
+      border-color: #2a1010;
+    }
+
+    .sidebar-actions {
+      padding: 12px;
+    }
+
+    .new-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border-2);
+      border-radius: 9px;
+      background: var(--bg-2);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .new-btn:hover {
+      background: var(--bg-3);
+    }
+
+    .convo-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 8px;
+    }
+
+    .convo-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .convo-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .convo-list::-webkit-scrollbar-thumb {
+      background: var(--border-2);
+      border-radius: 4px;
+    }
+
+    .convo-group-label {
+      font-size: 11px;
+      color: var(--text-3);
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      padding: 10px 8px 4px;
+    }
+
+    .convo-item {
+      display: flex;
+      align-items: center;
+      border-radius: 8px;
+      padding: 8px 8px;
+      cursor: pointer;
+      gap: 8px;
+      position: relative;
+      transition: background 0.12s;
+    }
+
+    .convo-item:hover {
+      background: var(--bg-3);
+    }
+
+    .convo-item.active {
+      background: var(--bg-3);
+    }
+
+    .convo-item .convo-title {
+      flex: 1;
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+    }
+
+    .convo-item.active .convo-title {
+      color: var(--text);
+    }
+
+    .convo-del {
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: transparent;
+      color: var(--text-3);
+      cursor: pointer;
+      border-radius: 5px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 14px;
+      transition: color 0.12s, background 0.12s;
+    }
+
+    .convo-item:hover .convo-del {
+      display: flex;
+    }
+
+    .convo-del:hover {
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .sidebar-bottom {
+      border-top: 1px solid var(--border);
+      padding: 10px;
+    }
+
+    .settings-btn {
+      width: 100%;
+      padding: 8px 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-2);
+      font-family: var(--font);
+      font-size: 13px;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .settings-btn:hover {
+      background: var(--bg-3);
+      color: var(--text);
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .topbar {
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    .model-selector {
+      position: relative;
+    }
+
+    .model-trigger {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid var(--border-2);
+      border-radius: 9px;
+      background: var(--bg-1);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .model-trigger:hover {
+      background: var(--bg-2);
+      border-color: #333;
+    }
+
+    .model-trigger.open {
+      border-color: #444;
+      background: var(--bg-2);
+    }
+
+    .model-trigger-logo {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .model-trigger-chevron {
+      color: var(--text-3);
+      transition: transform 0.15s;
+      margin-left: 2px;
+    }
+
+    .model-trigger.open .model-trigger-chevron {
+      transform: rotate(180deg);
+    }
+
+    .model-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: var(--bg-1);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+      width: 320px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
+      z-index: 50;
+      overflow: hidden;
+      animation: slideUp 0.15s ease;
+      display: none;
+    }
+
+    .model-dropdown.open {
+      display: block;
+    }
+
+    .model-search {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .model-search input {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--border-2);
+      border-radius: 7px;
+      background: var(--bg-2);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .model-search input:focus {
+      border-color: #444;
+    }
+
+    .model-list {
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 6px;
+    }
+
+    .model-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .model-list::-webkit-scrollbar-thumb {
+      background: var(--border-2);
+      border-radius: 4px;
+    }
+
+    .model-group-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-3);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 8px 8px 4px;
+    }
+
+    .model-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .model-option:hover {
+      background: var(--bg-3);
+    }
+
+    .model-option.selected {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .model-option-logo {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid var(--border-2);
+      overflow: hidden;
+    }
+
+    .model-option-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .model-option-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .model-option-desc {
+      font-size: 11px;
+      color: var(--text-2);
+      margin-top: 1px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .model-option-check {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: var(--text);
+      opacity: 0;
+    }
+
+    .model-option.selected .model-option-check {
+      opacity: 1;
+    }
+
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    .chat-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .chat-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 12px;
+    }
+
+    .chat-empty-logo {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--border-2);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      background: var(--bg-1);
+      letter-spacing: -1px;
+    }
+
+    .chat-empty h3 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .chat-empty p {
+      font-size: 13px;
+      color: var(--text-2);
+    }
+
+    .chat-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 28px 20px 12px;
+    }
+
+    .msg {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      animation: msgIn 0.2s ease;
+    }
+
+    @keyframes msgIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .msg.user {
+      flex-direction: row-reverse;
+    }
+
+    .msg-avatar {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .msg.user .msg-avatar {
+      background: var(--text);
+      color: #000;
+      border-color: transparent;
+    }
+
+    .msg.assistant .msg-avatar {
+      background: var(--bg-2);
+      color: var(--text);
+    }
+
+    .msg-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .msg.user .msg-body {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .msg-bubble {
+      display: inline-block;
+      padding: 12px 16px;
+      border-radius: 14px;
+      line-height: 1.65;
+      font-size: 14px;
+      max-width: 100%;
+    }
+
+    .msg.user .msg-bubble {
+      background: var(--bg-2);
+      border: 1px solid var(--border-2);
+      border-top-right-radius: 4px;
+    }
+
+    .msg.assistant .msg-content {
+      line-height: 1.7;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .msg.assistant .msg-content p {
+      margin-bottom: 10px;
+    }
+
+    .msg.assistant .msg-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .msg.assistant .msg-content pre {
+      margin: 12px 0;
+      background: var(--bg-1);
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      padding: 12px;
+      overflow-x: auto;
+    }
+
+    .msg.assistant .msg-content code {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: #e4e4e7;
+    }
+
+    .msg.assistant .msg-content strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .composer-wrap {
+      flex-shrink: 0;
+      border-top: 1px solid var(--border);
+      padding: 16px 20px;
+      background: var(--bg);
+    }
+
+    .composer {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--bg-1);
+      border: 1px solid var(--border-2);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+
+    .composer:focus-within {
+      border-color: #333;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
+    }
+
+    .composer textarea {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.6;
+      resize: none;
+      padding: 14px 16px 8px;
+      min-height: 52px;
+      max-height: 240px;
+    }
+
+    .composer textarea::placeholder {
+      color: var(--text-3);
+    }
+
+    .composer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px 10px;
+    }
+
+    .composer-hint {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    .send-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: var(--text);
+      color: #000;
+      border-radius: 9px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.15s, transform 0.1s;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+      opacity: 0.85;
+    }
+
+    .send-btn:active {
+      transform: scale(0.95);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .footer-note {
+      max-width: 720px;
+      margin: 8px auto 0;
+      font-size: 11px;
+      color: var(--text-3);
+      text-align: center;
+      letter-spacing: 0.1px;
+    }
+
+    .settings-section {
+      margin-bottom: 20px;
+    }
+
+    .settings-section h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-2);
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      margin-bottom: 6px;
+    }
+
+    .settings-row-label {
+      font-size: 13px;
+    }
+
+    .settings-row-sub {
+      font-size: 12px;
+      color: var(--text-2);
+      margin-top: 1px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-2);
+      border-top-color: var(--text-2);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .logo-anthropic {
+      background: #c97b42;
+    }
+
+    .logo-openai {
+      background: #10a37f;
+    }
+
+    .logo-meta {
+      background: #0082fb;
+    }
+
+    .logo-groq {
+      background: #f55036;
+    }
+
+    .logo-qwen {
+      background: #6750a4;
+    }
+
+    .logo-canopy {
+      background: #1d6e4a;
+    }
+
+    .logo-allam {
+      background: #1a5a8a;
+    }
+
+    .logo-icon {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      font-family: var(--mono);
+      letter-spacing: -0.5px;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+
+      .topbar {
+        padding: 10px 14px;
+      }
+
+      .chat-inner {
+        padding: 16px 14px 8px;
+      }
+
+      .composer-wrap {
+        padding: 10px 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay" id="keyOverlay">
+    <div class="modal">
+      <div class="modal-logo">
+        <div class="modal-logo-mark">🤖</div>
+        <div style="font-size:16px;font-weight:700;letter-spacing:-0.3px;">v.ai</div>
+      </div>
+      <h2>Enter your Groq API key</h2>
+      <p>v.ai uses the Groq API to power fast AI responses. Your key is stored only in your browser.</p>
+      <div class="modal-sep"></div>
+      <div class="field">
+        <label>Groq API Key</label>
+        <input id="keyInput" type="password" placeholder="gsk_..." autocomplete="off" />
+      </div>
+      <div class="modal-notice">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        Your API key is saved locally in your browser. It is never sent to any server other than
+        <strong>api.groq.com</strong>.
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="keySkip">Skip for now</button>
+        <button class="btn btn-primary" id="keySave">Save & continue →</button>
+      </div>
+    </div>
+  </div>
+  <div class="overlay hidden" id="settingsOverlay">
+    <div class="modal">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h2 style="font-size:16px;">Settings</h2>
+        <button class="icon-btn" id="settingsClose">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="settings-section">
+        <h3>API Key</h3>
+        <div class="field" style="margin-bottom:0">
+          <label>Groq API Key</label>
+          <input id="settingsKeyInput" type="password" placeholder="gsk_..." autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="modal-sep"></div>
+
+      <div class="settings-section">
+        <h3>Data & Privacy</h3>
+        <div class="modal-notice">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+          All conversations and your API key are stored locally in your browser's <strong>localStorage</strong>. Nothing
+          is sent to external servers except your messages to <strong>api.groq.com</strong>.
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Clear all conversations</div>
+            <div class="settings-row-sub">Deletes all chat history from localStorage</div>
+          </div>
+          <button class="btn btn-danger" id="clearConvos" style="font-size:12px;padding:7px 12px;">Clear</button>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Delete all local data</div>
+            <div class="settings-row-sub">Removes everything including your API key</div>
+          </div>
+          <button class="btn btn-danger" id="clearAll" style="font-size:12px;padding:7px 12px;">Delete all</button>
+        </div>
+      </div>
+
+      <div class="modal-sep"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="settingsCancel">Cancel</button>
+        <button class="btn btn-primary" id="settingsSave">Save changes</button>
+      </div>
+    </div>
+  </div>
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <div class="brand-mark">🤖</div>
+        <div class="brand-name">v.ai</div>
+      </div>
+      <button class="icon-btn" id="newChatBtn" title="New chat">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
+    </div>
+    <div class="sidebar-actions"></div>
+    <div class="convo-list" id="convoList"></div>
+    <div class="sidebar-bottom">
+      <button class="settings-btn" id="settingsBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        Settings
+      </button>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div class="model-selector" id="modelSelector">
+        <button class="model-trigger" id="modelTrigger">
+          <div class="model-trigger-logo" id="triggerLogo"></div>
+          <span id="triggerLabel">Model</span>
+          <svg class="model-trigger-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div class="model-dropdown" id="modelDropdown">
+          <div class="model-search">
+            <input type="text" id="modelSearch" placeholder="Search models…" />
+          </div>
+          <div class="model-list" id="modelList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="chat-empty" id="chatEmpty">
+        <div class="chat-empty-logo">🤖</div>
+        <h3>How can I help you?</h3>
+        <p>Choose a model above and start chatting.</p>
+      </div>
+      <div class="chat-inner" id="chatInner" style="display:none;"></div>
+    </div>
+
+    <div class="composer-wrap">
+      <div class="composer" id="composer">
+        <textarea id="question" rows="1" placeholder="Send a message…"></textarea>
+        <div class="composer-bottom">
+          <span class="composer-hint" id="statusHint">Groq · Fast inference</span>
+          <button class="send-btn" id="sendBtn" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="19" x2="12" y2="5" />
+              <polyline points="5 12 12 5 19 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="footer-note">v.ai stores data locally. <button
+          onclick="document.getElementById('settingsOverlay').classList.remove('hidden')"
+          style="background:none;border:none;color:inherit;text-decoration:underline;cursor:pointer;font-size:inherit;font-family:inherit;">Manage
+          data →</button></div>
+    </div>
+  </main>
+
+  <script>
+    const STORE_KEY = "vai-v1";
+
+    const MODELS = [
+      { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", org: "Meta", logoClass: "logo-meta", logoChar: "M", desc: "Large, versatile — great for most tasks" },
+      { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B", org: "Meta", logoClass: "logo-meta", logoChar: "M", desc: "Very fast, practical for short prompts" },
+      { id: "meta-llama/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout 17B", org: "Meta", logoClass: "logo-meta", logoChar: "M", desc: "Instruction-tuned for assistant workflows" },
+      { id: "openai/gpt-oss-120b", name: "GPT OSS 120B", org: "OpenAI", logoClass: "logo-openai", logoChar: "○", desc: "Large open model for complex reasoning" },
+      { id: "openai/gpt-oss-20b", name: "GPT OSS 20B", org: "OpenAI", logoClass: "logo-openai", logoChar: "○", desc: "Cost-efficient mid-size open model" },
+      { id: "openai/gpt-oss-safeguard-20b", name: "GPT OSS Safeguard 20B", org: "OpenAI", logoClass: "logo-openai", logoChar: "○", desc: "Safety-focused for risk-aware prompts" },
+      { id: "qwen/qwen3-32b", name: "Qwen3 32B", org: "Qwen / Alibaba", logoClass: "logo-qwen", logoChar: "Q", desc: "32B multilingual with strong coding" },
+      { id: "groq/compound", name: "Compound", org: "Groq", logoClass: "logo-groq", logoChar: "G", desc: "High-capacity for deep reasoning" },
+      { id: "groq/compound-mini", name: "Compound Mini", org: "Groq", logoClass: "logo-groq", logoChar: "G", desc: "Compact variant, lower latency" },
+      { id: "allam-2-7b", name: "Allam 2 7B", org: "Allam", logoClass: "logo-allam", logoChar: "A", desc: "Lightweight Arabic-oriented 7B model" },
+      { id: "canopylabs/orpheus-v1-english", name: "Orpheus v1 English", org: "Canopy Labs", logoClass: "logo-canopy", logoChar: "C", desc: "Balanced English quality and speed" },
+      { id: "meta-llama/llama-prompt-guard-2-86m", name: "Prompt Guard 2 86M", org: "Meta", logoClass: "logo-meta", logoChar: "M", desc: "Prompt risk classifier" },
+    ];
+
+    const groups = [
+      { label: "Meta", filter: m => m.org === "Meta" },
+      { label: "OpenAI", filter: m => m.org === "OpenAI" },
+      { label: "Qwen", filter: m => m.org === "Qwen / Alibaba" },
+      { label: "Groq", filter: m => m.org === "Groq" },
+      { label: "Other", filter: m => !["Meta", "OpenAI", "Qwen / Alibaba", "Groq"].includes(m.org) },
+    ];
+
+    const $ = id => document.getElementById(id);
+
+    let state = load();
+
+    init();
+
+    function init() {
+      if (!state.apiKey) showKeyOverlay();
+      ensureConvo();
+      renderSidebar();
+      renderModelDropdown(MODELS);
+      updateTrigger();
+      renderMessages();
+      setupListeners();
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORE_KEY);
+        const parsed = raw ? JSON.parse(raw) : {};
+        return {
+          apiKey: parsed.apiKey || "",
+          model: parsed.model || "llama-3.3-70b-versatile",
+          activeId: parsed.activeId || null,
+          convos: Array.isArray(parsed.convos) ? parsed.convos : []
+        };
+      } catch { return { apiKey: "", model: "llama-3.3-70b-versatile", activeId: null, convos: [] }; }
+    }
+
+    function save() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+
+    function showKeyOverlay() { $("keyOverlay").classList.remove("hidden"); }
+
+    function ensureConvo() {
+      if (!state.convos.length) { newConvo(); return; }
+      if (!state.convos.find(c => c.id === state.activeId)) {
+        state.activeId = state.convos[0].id;
+        save();
+      }
+    }
+
+    function newConvo() {
+      const c = { id: crypto.randomUUID(), title: "New chat", ts: Date.now(), msgs: [] };
+      state.convos.unshift(c);
+      state.activeId = c.id;
+      save();
+    }
+
+    function activeConvo() { return state.convos.find(c => c.id === state.activeId); }
+
+    function deleteConvo(id) {
+      state.convos = state.convos.filter(c => c.id !== id);
+      if (!state.convos.length) newConvo();
+      else if (state.activeId === id) state.activeId = state.convos[0].id;
+      save();
+      renderSidebar();
+      renderMessages();
+    }
+
+    function renderSidebar() {
+      const list = $("convoList");
+      if (!state.convos.length) { list.innerHTML = ""; return; }
+
+      list.innerHTML = state.convos.map(c => `
+    <div class="convo-item ${c.id === state.activeId ? "active" : ""}" data-id="${c.id}">
+      <div class="convo-title">${esc(c.title)}</div>
+      <button class="convo-del" data-del="${c.id}" title="Delete">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  `).join("");
+
+      list.querySelectorAll(".convo-item").forEach(el => {
+        el.addEventListener("click", e => {
+          if (e.target.closest(".convo-del")) return;
+          state.activeId = el.dataset.id;
+          save();
+          renderSidebar();
+          renderMessages();
+        });
+      });
+
+      list.querySelectorAll(".convo-del").forEach(btn => {
+        btn.addEventListener("click", () => deleteConvo(btn.dataset.del));
+      });
+    }
+
+    function buildModelHTML(models) {
+      const visible = {};
+      for (const g of groups) {
+        const items = models.filter(g.filter);
+        if (items.length) visible[g.label] = items;
+      }
+
+      return Object.entries(visible).map(([label, items]) => `
+    <div class="model-group-label">${label}</div>
+    ${items.map(m => `
+      <div class="model-option ${m.id === state.model ? "selected" : ""}" data-id="${m.id}">
+        <div class="model-option-logo ${m.logoClass}">
+          <span class="logo-icon">${m.logoChar}</span>
+        </div>
+        <div class="model-option-info">
+          <div class="model-option-name">${esc(m.name)}</div>
+          <div class="model-option-desc">${esc(m.desc)}</div>
+        </div>
+        <svg class="model-option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    `).join("")}
+  `).join("");
+    }
+
+    function renderModelDropdown(models) {
+      $("modelList").innerHTML = buildModelHTML(models);
+      $("modelList").querySelectorAll(".model-option").forEach(el => {
+        el.addEventListener("click", () => {
+          state.model = el.dataset.id;
+          save();
+          closeDropdown();
+          renderModelDropdown(MODELS);
+          updateTrigger();
+        });
+      });
+    }
+
+    function updateTrigger() {
+      const m = MODELS.find(x => x.id === state.model) || MODELS[0];
+      $("triggerLabel").textContent = m.name;
+      const logo = $("triggerLogo");
+      logo.className = `model-trigger-logo ${m.logoClass}`;
+      logo.innerHTML = `<span class="logo-icon" style="font-size:9px;">${m.logoChar}</span>`;
+    }
+
+    function closeDropdown() {
+      $("modelTrigger").classList.remove("open");
+      $("modelDropdown").classList.remove("open");
+    }
+
+    function renderMessages() {
+      const convo = activeConvo();
+      const msgs = convo ? convo.msgs : [];
+      const empty = $("chatEmpty");
+      const inner = $("chatInner");
+
+      if (!msgs.length) {
+        empty.style.display = "flex";
+        inner.style.display = "none";
+        inner.innerHTML = "";
+        return;
+      }
+
+      empty.style.display = "none";
+      inner.style.display = "block";
+      inner.innerHTML = msgs.map(m => renderMsg(m)).join("");
+      $("chatContainer").scrollTop = $("chatContainer").scrollHeight;
+    }
+
+    function renderMsg(m) {
+      if (m.role === "user") {
+        return `<div class="msg user">
+      <div class="msg-avatar">Y</div>
+      <div class="msg-body"><div class="msg-bubble">${esc(m.content)}</div></div>
+    </div>`;
+      }
+      return `<div class="msg assistant">
+    <div class="msg-avatar">🤖</div>
+    <div class="msg-body"><div class="msg-content">${renderMd(m.content)}</div></div>
+  </div>`;
+    }
+
+    function renderMd(text) {
+      const codeRegex = /```([\w#+-]*)?\n?([\s\S]*?)```/g;
+      let html = ""; let last = 0; let m;
+      while ((m = codeRegex.exec(text)) !== null) {
+        html += textToHtml(text.slice(last, m.index));
+        html += `<pre><code>${esc(m[2].trimEnd())}</code></pre>`;
+        last = m.index + m[0].length;
+      }
+      html += textToHtml(text.slice(last));
+      return html;
+    }
+
+    function textToHtml(text) {
+      return text.split("\n").map(line => {
+        line = line.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+        return `<p>${line || "&nbsp;"}</p>`;
+      }).join("");
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    async function send() {
+      const textarea = $("question");
+      const text = textarea.value.trim();
+      if (!text) return;
+
+      if (!state.apiKey) { showKeyOverlay(); return; }
+
+      const convo = activeConvo();
+      if (!convo) return;
+
+      convo.msgs.push({ role: "user", content: text, ts: Date.now() });
+      convo.ts = Date.now();
+      if (convo.title === "New chat") convo.title = text.slice(0, 38) || "Chat";
+      textarea.value = "";
+      autoResize(textarea);
+      save();
+      renderSidebar();
+      renderMessages();
+
+      $("sendBtn").disabled = true;
+      $("statusHint").textContent = "Thinking…";
+
+      const empty = $("chatEmpty");
+      const inner = $("chatInner");
+      empty.style.display = "none";
+      inner.style.display = "block";
+
+      const loadDiv = document.createElement("div");
+      loadDiv.className = "msg assistant";
+      loadDiv.innerHTML = `<div class="msg-avatar">🤖</div><div class="msg-body"><div class="msg-content"><div class="spinner"></div></div></div>`;
+      inner.appendChild(loadDiv);
+      $("chatContainer").scrollTop = $("chatContainer").scrollHeight;
+
+      try {
+        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${state.apiKey}` },
+          body: JSON.stringify({
+            model: state.model,
+            messages: [
+              { role: "system", content: "You are v.ai, a helpful assistant. Be concise and clear." },
+              ...convo.msgs.map(m => ({ role: m.role, content: m.content }))
+            ]
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || `Error ${res.status}`);
+
+        const answer = data.choices?.[0]?.message?.content || "No response.";
+        convo.msgs.push({ role: "assistant", content: answer, ts: Date.now() });
+        convo.ts = Date.now();
+        $("statusHint").textContent = "Groq · Fast inference";
+      } catch (err) {
+        convo.msgs.push({ role: "assistant", content: `⚠ ${err.message}`, ts: Date.now() });
+        $("statusHint").textContent = "Error";
+      } finally {
+        $("sendBtn").disabled = false;
+        save();
+        renderSidebar();
+        renderMessages();
+      }
+    }
+
+    function autoResize(el) {
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 240) + "px";
+    }
+
+    function setupListeners() {
+      $("keySave").addEventListener("click", () => {
+        const k = $("keyInput").value.trim();
+        if (k) { state.apiKey = k; save(); }
+        $("keyOverlay").classList.add("hidden");
+      });
+      $("keySkip").addEventListener("click", () => $("keyOverlay").classList.add("hidden"));
+      $("keyInput").addEventListener("keydown", e => { if (e.key === "Enter") $("keySave").click(); });
+
+      $("newChatBtn").addEventListener("click", () => { newConvo(); renderSidebar(); renderMessages(); });
+
+      $("modelTrigger").addEventListener("click", e => {
+        e.stopPropagation();
+        const open = $("modelDropdown").classList.toggle("open");
+        $("modelTrigger").classList.toggle("open", open);
+        if (open) $("modelSearch").focus();
+      });
+
+      $("modelSearch").addEventListener("input", e => {
+        const q = e.target.value.toLowerCase();
+        const filtered = MODELS.filter(m => m.name.toLowerCase().includes(q) || m.org.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q));
+        renderModelDropdown(filtered);
+      });
+
+      document.addEventListener("click", e => {
+        if (!$("modelSelector").contains(e.target)) closeDropdown();
+      });
+
+      const ta = $("question");
+      ta.addEventListener("input", () => {
+        autoResize(ta);
+        $("sendBtn").disabled = !ta.value.trim();
+      });
+      ta.addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+      });
+      $("sendBtn").addEventListener("click", send);
+
+      $("settingsBtn").addEventListener("click", () => {
+        $("settingsKeyInput").value = state.apiKey;
+        $("settingsOverlay").classList.remove("hidden");
+      });
+
+      function closeSettings() { $("settingsOverlay").classList.add("hidden"); }
+
+      $("settingsClose").addEventListener("click", closeSettings);
+      $("settingsCancel").addEventListener("click", closeSettings);
+
+      $("settingsSave").addEventListener("click", () => {
+        const k = $("settingsKeyInput").value.trim();
+        if (k) state.apiKey = k;
+        save();
+        closeSettings();
+      });
+
+      $("clearConvos").addEventListener("click", () => {
+        if (!confirm("Delete all conversations? This cannot be undone.")) return;
+        state.convos = [];
+        newConvo();
+        save();
+        renderSidebar();
+        renderMessages();
+        closeSettings();
+      });
+
+      $("clearAll").addEventListener("click", () => {
+        if (!confirm("Delete ALL local data including your API key? This cannot be undone.")) return;
+        localStorage.removeItem(STORE_KEY);
+        location.reload();
+      });
+
+      $("settingsOverlay").addEventListener("click", e => {
+        if (e.target === $("settingsOverlay")) closeSettings();
+      });
+
+      $("keyOverlay").addEventListener("click", e => {
+        if (e.target === $("keyOverlay")) $("keyOverlay").classList.add("hidden");
+      });
+    }
+  </script>
+</body>
+
+</html>
